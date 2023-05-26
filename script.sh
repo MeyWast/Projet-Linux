@@ -9,6 +9,9 @@ if [ ! -f "$fichier_utilisateurs" ]; then
     exit 1
 fi
 
+# Connexion ssh puis création du dossier "saves"
+    sudo sshpass -p "$mdp" ssh "$login"@"$server" "mkdir /home/saves"
+
 # Lecture du fichier utilisateur ligne par ligne
 while IFS=',' read -r nom prenom mail mot_de_passe _; do
     # Création du nom d'utilisateur en utilisant la première lettre du prénom et le nom complet
@@ -31,3 +34,23 @@ while IFS=',' read -r nom prenom mail mot_de_passe _; do
     sudo chmod u+w "$dossier_utilisateur"
     
 done < "$fichier_utilisateurs"
+
+
+# Création d'un script pour automatiser la sauvegarde que j'envoie sur le serveur ssh 
+cat <<EOF > script_cron
+#!/bin/bash
+dossier_sauvegarde=$(ls /home/shared)
+for dossier in \$dossier_sauvegarde; do
+    sudo tar -czf "/home/\$(basename \$dossier)/save_\$(basename \$dossier).tgz" --directory="/home/\$(basename \$dossier)/a_sauver" .
+    sudo sshpass -p "\$mdp" ssh "\$login@\$server" "
+    if [ -f "/home/saves/save_\$utilisateur.tgz" ]; then
+        rm "/home/saves/save_\$utilisateur.tgz"
+    fi"cron
+    sudo sshpass -p "\$mdp" scp -r "/home/\$utilisateur/a_sauver" "\$login@\$server":/home/"\$login"/saves/"save_\$utilisateur".tgz
+    sudo rm "/home/\$(basename \$dossier)/save_\$(basename \$dossier).tgz"
+done
+EOF
+
+# j'applique une tâche cron sur le script tout les jours de la semaine à 23h
+(crontab -l; echo "0 23 * * 1-5 script_cron") | crontab -
+
