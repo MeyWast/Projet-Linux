@@ -10,8 +10,8 @@ script de déploiement de comptes pour une liste d’utilisateurs.trices. qui es
 - [] Création de compte pour chaque utilisateurs
     - [x] Les utilisateurs doivent changer leur mot de passe à la première connexion 
     - [x] chaque utilisateur doit avoir un home directory avec un fichier "a_sauver"
-    - [] Création d'un dossier "shared" appartenant à root 
-    - [] A l'intérieur du dossier shared, créer un dossier par utilisateur qui doit appartenir à ce dernier et avoir les droits d'éxécution et de lecture pour les autres et des droits en écriture pour le propriétaire
+    - [x] Création d'un dossier "shared" appartenant à root 
+    - [x] A l'intérieur du dossier shared, créer un dossier par utilisateur qui doit appartenir à ce dernier et avoir les droits d'éxécution et de lecture pour les autres et des droits en écriture pour le propriétaire
     - [] Un fois le compte crée, envoie de mail à chaque utilisateur avec son login, mot de passe
 
 ### Sauvegarde
