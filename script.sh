@@ -19,5 +19,8 @@ while IFS=',' read -r nom prenom mail mot_de_passe _; do
     
     # Désactivation du compte utilisateur pour qu'il soit obligé de changer son mot de passe à la première connexion
     sudo chage -d 0 "$utilisateur"
+
+    # Création du dossier "a_sauver" dans le dossier home de l'utilisateur
+    sudo mkdir "/home/$utilisateur/a_sauver"
     
 done < "$fichier_utilisateurs"
