@@ -15,7 +15,7 @@ script de déploiement de comptes pour une liste d’utilisateurs.trices. qui es
     - [] Un fois le compte crée, envoie de mail à chaque utilisateur avec son login, mot de passe
 
 ### Sauvegarde
-- [] Création d'un script de sauvegarde automatique de "a_sauver" sur le serveur distant
+- [x] Création d'un script de sauvegarde automatique de "a_sauver" sur le serveur distant tout les jours de la semaine à 23h
 - [] Création d'un script "retablir_sauvegarde" qui permet de restaurer la sauvegarde
 - [] Connexion avec clé ssh pour chacun des utilisateurs
 
