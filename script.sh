@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Chemin vers le fichier contenant les informations des utilisateurs
-fichier_utilisateurs="accounts.csv"
+read -p 'Pour la lecture des informations des utilisateurs, veuillez indiquer le nom du fichier csv : ' fichier_utilisateurs
 
 # Vérification si le fichier existe
 if [ ! -f "$fichier_utilisateurs" ]; then
@@ -22,5 +22,12 @@ while IFS=',' read -r nom prenom mail mot_de_passe _; do
 
     # Création du dossier "a_sauver" dans le dossier home de l'utilisateur
     sudo mkdir "/home/$utilisateur/a_sauver"
+
+    # Création du dossier de l'utilisateur dans le dossier "shared" en local
+    dossier_utilisateur="$dossier_shared/$utilisateur"
+    sudo mkdir "$dossier_utilisateur"
+    sudo chown $utilisateur "$dossier_utilisateur"
+    sudo chmod 755 "$dossier_utilisateur"
+    sudo chmod u+w "$dossier_utilisateur"
     
 done < "$fichier_utilisateurs"
