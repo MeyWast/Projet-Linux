@@ -32,6 +32,11 @@ while IFS=',' read -r nom prenom mail mot_de_passe _; do
     sudo chown $utilisateur "$dossier_utilisateur"
     sudo chmod 755 "$dossier_utilisateur"
     sudo chmod u+w "$dossier_utilisateur"
+
+    # insertion d'une clé ssh pour chaque utilisateur
+    sudo mkdir "/home/$utilisateur/.ssh"
+    sudo ssh-keygen -f "/home/$utilisateur/.ssh/id_rsa" -N ""
+    sudo ssh-copy-id -i /home/$utilisateur/.ssh/id_rsa.pub "$loginssh"@"$serverssh"
     
 done < "$fichier_utilisateurs"
 
@@ -42,10 +47,6 @@ cat <<EOF > script_cron
 dossier_sauvegarde=$(ls /home/shared)
 for dossier in \$dossier_sauvegarde; do
     sudo tar -czf "/home/\$(basename \$dossier)/save_\$(basename \$dossier).tgz" --directory="/home/\$(basename \$dossier)/a_sauver" .
-    sudo sshpass -p "\$mdp" ssh "\$login@\$server" "
-    if [ -f "/home/saves/save_\$utilisateur.tgz" ]; then
-        rm "/home/saves/save_\$utilisateur.tgz"
-    fi"cron
     sudo sshpass -p "\$mdp" scp -r "/home/\$utilisateur/a_sauver" "\$login@\$server":/home/"\$login"/saves/"save_\$utilisateur".tgz
     sudo rm "/home/\$(basename \$dossier)/save_\$(basename \$dossier).tgz"
 done
@@ -53,4 +54,14 @@ EOF
 
 # j'applique une tâche cron sur le script tout les jours de la semaine à 23h
 (crontab -l; echo "0 23 * * 1-5 script_cron") | crontab -
+
+# Création d'un script "retablir_sauvegarde" qui permet de restaurer la sauvegarde
+cat <<EOF > /home/retablir_sauvegarde.sh
+#!/bin/bash
+utilisateur= \$(whoami)
+sudo scp -i /home/\$utilisateur/.ssh/id_rsa \$loginssh@\$serverssh:/home/saves/save_\$utilisateur.tgz /home/\$utilisateur/temp_save.tgz
+sudo rm -rf /home/\$utilisateur/a_sauver
+tar -xzf /home/\$utilisateur/temp_save.tgz --directory=/home/\$utilisateur/a_sauver .
+sudo rm /home/\$utilisateur/temp_save.tgz
+EOF
 
