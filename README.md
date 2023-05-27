@@ -16,8 +16,8 @@ script de déploiement de comptes pour une liste d’utilisateurs.trices. qui es
 
 ### Sauvegarde
 - [x] Création d'un script de sauvegarde automatique de "a_sauver" sur le serveur distant tout les jours de la semaine à 23h
-- [] Création d'un script "retablir_sauvegarde" qui permet de restaurer la sauvegarde
-- [] Connexion avec clé ssh pour chacun des utilisateurs
+- [x] Création d'un script "retablir_sauvegarde" qui permet de restaurer la sauvegarde
+- [x] Connexion avec clé ssh pour chacun des utilisateurs
 
 ### Eclipse
 - [] Installation d'eclipse en local pour chaque utilisateur
