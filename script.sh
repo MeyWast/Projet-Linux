@@ -6,6 +6,19 @@ sudo apt-get install sshpass -y
 # Chemin vers le fichier contenant les informations des utilisateurs
 read -p 'Pour la lecture des informations des utilisateurs, veuillez indiquer le nom du fichier csv : ' fichier_utilisateurs
 
+echo "Pour la connexion ssh, veuillez entrer vos informations :"
+read -p "Adresse serveur ssh : " serverssh
+read -p "login ssh : " loginssh
+read -p "mot de passe ssh : " mdpssh
+
+echo "Pour l'envoi du mail, veuillez entrer vos informations :"
+read -p "Adresse serveur smtp : " serversmtp
+read -p "login smtp : " loginsmtp
+read -p "mot de passe smtp : " mdpsmtp
+read -p "le port smtp :" port
+
+read -p "Pour l'utilisation de nextcloud, veuillez entrer vos version de mysql : " versionmysql
+
 # Vérification si le fichier existe
 if [ ! -f "$fichier_utilisateurs" ]; then
     echo "Le fichier $fichier_utilisateurs n'existe pas."
@@ -13,7 +26,7 @@ if [ ! -f "$fichier_utilisateurs" ]; then
 fi
 
 # Connexion ssh puis création du dossier "saves"
-    sudo sshpass -p "$mdp" ssh "$login"@"$server" "mkdir /home/saves"
+    sudo sshpass -p "$mdpssh" ssh "$loginssh"@"$serverssh" "mkdir /home/saves"
 
 # Lecture du fichier utilisateur ligne par ligne
 while IFS=',' read -r nom prenom mail mot_de_passe _; do
@@ -40,7 +53,11 @@ while IFS=',' read -r nom prenom mail mot_de_passe _; do
     sudo mkdir "/home/$utilisateur/.ssh"
     sudo ssh-keygen -f "/home/$utilisateur/.ssh/id_rsa" -N ""
     sudo ssh-copy-id -i /home/$utilisateur/.ssh/id_rsa.pub "$loginssh"@"$serverssh"
-    
+   
+    # création d'utilisateur nextcloud
+    sudo sshpass -p "$mdpssh" ssh "$loginssh"@"$serverssh" /snap/bin/nextcloud.occ user:add --display-name="$prenom $nom" $utilisateur
+    sudo sshpass -p "$mdpssh" ssh "$loginssh"@"$serverssh" /snap/bin/nextcloud.occ user:setting $utilisateur password "$mot_de_passe"
+
 done < "$fichier_utilisateurs"
 
 
@@ -50,7 +67,7 @@ cat <<EOF > script_cron
 dossier_sauvegarde=$(ls /home/shared)
 for dossier in \$dossier_sauvegarde; do
     sudo tar -czf "/home/\$(basename \$dossier)/save_\$(basename \$dossier).tgz" --directory="/home/\$(basename \$dossier)/a_sauver" .
-    sudo sshpass -p "\$mdp" scp -r "/home/\$utilisateur/a_sauver" "\$login@\$server":/home/"\$login"/saves/"save_\$utilisateur".tgz
+    sudo sshpass -p "\$mdpssh" scp -r "/home/\$utilisateur/a_sauver" "\$loginssh@\$serverssh":/home/"\$login"/saves/"save_\$utilisateur".tgz
     sudo rm "/home/\$(basename \$dossier)/save_\$(basename \$dossier).tgz"
 done
 EOF
@@ -75,5 +92,19 @@ sudo ln -s /usr/local/share/eclipse/eclipse /usr/local/bin/eclipse
 sudo rm /home/eclipse-java-2023-03-R-linux-gtk-x86_64.tar.gz
 
 # Configuration pare feu
-iptables -A INPUT -p tcp --dport 0:65535 -j DROP
+iptables -A INPUT -p ftp --dport 0:65535 -j DROP
 iptables -A INPUT -p udp --dport 0:65535 -j DROP
+
+# Déploiement nextcloud
+touch deploiement_nextcloud.sh
+cat <<EOF > deploiement_nextcloud.sh
+#!/bin/bash
+utilisateur= \$(whoami)
+sudo ssh -i /home/\$utilisateur/.ssh/id_rsa "\$loginssh"@"\$serverssh" -N -L 4242:localhost:80
+EOF
+
+# Installation nextcloud
+sudo sshpass -p "$mdpssh" ssh "$loginssh"@"$serverssh" apt-get install snapd -y
+sudo sshpass -p "$mdpssh" ssh "$loginssh"@"$serverssh" snap install nextcloud
+sudo sshpass -p "$mdpssh" ssh "$loginssh"@"$serverssh" /snap/bin/nextcloud.manual-install "nextcloud-admin" "N3x+_Cl0uD"
+
