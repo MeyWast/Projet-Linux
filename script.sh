@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# installation de sshpass
+sudo apt-get install sshpass
+
 # Chemin vers le fichier contenant les informations des utilisateurs
 read -p 'Pour la lecture des informations des utilisateurs, veuillez indiquer le nom du fichier csv : ' fichier_utilisateurs
 
@@ -65,3 +68,8 @@ tar -xzf /home/\$utilisateur/temp_save.tgz --directory=/home/\$utilisateur/a_sau
 sudo rm /home/\$utilisateur/temp_save.tgz
 EOF
 
+# Installation d'éclipse
+sudo wget -P /home/ https://rhlx01.hs-esslingen.de/pub/Mirrors/eclipse/technology/epp/downloads/release/2023-03/R/eclipse-java-2023-03-R-linux-gtk-x86_64.tar.gz
+sudo tar -xzf /home/eclipse-java-2023-03-R-linux-gtk-x86_64.tar.gz -C /usr/local/share
+sudo ln -s /usr/local/share/eclipse/eclipse /usr/local/bin/eclipse
+sudo rm /home/eclipse-java-2023-03-R-linux-gtk-x86_64.tar.gz
