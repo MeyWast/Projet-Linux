@@ -7,12 +7,12 @@ script de déploiement de comptes pour une liste d’utilisateurs.trices. qui es
 
 ## Cahier des charges : 
 ### Installation de base 
-- [] Création de compte pour chaque utilisateurs
+- [x] Création de compte pour chaque utilisateurs
     - [x] Les utilisateurs doivent changer leur mot de passe à la première connexion 
     - [x] chaque utilisateur doit avoir un home directory avec un fichier "a_sauver"
     - [x] Création d'un dossier "shared" appartenant à root 
     - [x] A l'intérieur du dossier shared, créer un dossier par utilisateur qui doit appartenir à ce dernier et avoir les droits d'éxécution et de lecture pour les autres et des droits en écriture pour le propriétaire
-    - [] Un fois le compte crée, envoie de mail à chaque utilisateur avec son login, mot de passe
+    - [x] Un fois le compte crée, envoie de mail à chaque utilisateur avec son login, mot de passe
 
 ### Sauvegarde
 - [x] Création d'un script de sauvegarde automatique de "a_sauver" sur le serveur distant tout les jours de la semaine à 23h
