@@ -20,7 +20,7 @@ script de déploiement de comptes pour une liste d’utilisateurs.trices. qui es
 - [x] Connexion avec clé ssh pour chacun des utilisateurs
 
 ### Eclipse
-- [] Installation d'eclipse en local pour chaque utilisateur
+- [x] Installation d'eclipse en local pour chaque utilisateur
 
 ### Pare-feu
 - [] Installation d'un pare feu qui bloque toutes les connexion FTP et du protocole UDP
