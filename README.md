@@ -23,7 +23,7 @@ script de déploiement de comptes pour une liste d’utilisateurs.trices. qui es
 - [x] Installation d'eclipse en local pour chaque utilisateur
 
 ### Pare-feu
-- [] Installation d'un pare feu qui bloque toutes les connexion FTP et du protocole UDP
+- [x] Installation d'un pare feu qui bloque toutes les connexion FTP et du protocole UDP
 
 ### Nextcloud
 - [] Installation de nextcloud sur le serveur distant avec compte administrateur
