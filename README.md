@@ -26,7 +26,7 @@ script de déploiement de comptes pour une liste d’utilisateurs.trices. qui es
 - [x] Installation d'un pare feu qui bloque toutes les connexion FTP et du protocole UDP
 
 ### Nextcloud
-- [] Installation de nextcloud sur le serveur distant avec compte administrateur
+- [x] Installation de nextcloud sur le serveur distant avec compte administrateur
 
 ### Monitoring
 - [] Installation d'outil de monitoring sur le serveur distant
