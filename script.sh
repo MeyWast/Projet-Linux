@@ -17,8 +17,6 @@ read -p "login smtp : " loginsmtp
 read -p "mot de passe smtp : " mdpsmtp
 read -p "le port smtp :" port
 
-read -p "Pour l'utilisation de nextcloud, veuillez entrer vos version de mysql : " versionmysql
-
 # Vérification si le fichier existe
 if [ ! -f "$fichier_utilisateurs" ]; then
     echo "Le fichier $fichier_utilisateurs n'existe pas."
@@ -45,6 +43,8 @@ while IFS=',' read -r nom prenom mail mot_de_passe _; do
     # Création du dossier de l'utilisateur dans le dossier "shared" en local
     dossier_utilisateur="$dossier_shared/$utilisateur"
     sudo mkdir "$dossier_utilisateur"
+
+    # attribution des droits à l'utilisateur
     sudo chown $utilisateur "$dossier_utilisateur"
     sudo chmod 755 "$dossier_utilisateur"
     sudo chmod u+w "$dossier_utilisateur"
@@ -120,10 +120,10 @@ sudo rm /home/eclipse-java-2023-03-R-linux-gtk-x86_64.tar.gz
 iptables -A INPUT -p tcp --dport 21 -j DROP
 iptables -A OUTPUT -p tcp --dport 21 -j DROP
 
-iptables -A INPUT -p udp --dport 0:65535 -j DROP
+iptables -A INPUT -p udp -j DROP
 iptables -A OUTPUT -p udp -j DROP
 
-# Déploiement nextcloud
+# script Déploiement nextcloud
 touch deploiement_nextcloud.sh
 cat <<EOF > deploiement_nextcloud.sh
 #!/bin/bash
@@ -154,3 +154,4 @@ sudo sshpass -p "$mdpssh" ssh "$loginssh"@"$serverssh" << EOF
     # Nettoyage des fichiers temporaires
     rm script_monitoring.sh
 EOF
+
