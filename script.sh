@@ -62,7 +62,7 @@ done < "$fichier_utilisateurs"
 
 
 # Création d'un script pour automatiser la sauvegarde que j'envoie sur le serveur ssh 
-cat <<EOF > script_cron
+cat <<EOF > script_cron.sh
 #!/bin/bash
 dossier_sauvegarde=$(ls /home/shared)
 for dossier in \$dossier_sauvegarde; do
@@ -73,7 +73,7 @@ done
 EOF
 
 # j'applique une tâche cron sur le script tout les jours de la semaine à 23h
-(crontab -l; echo "0 23 * * 1-5 script_cron") | crontab -
+(crontab -l; echo "0 23 * * 1-5 script_cron.sh") | crontab -
 
 # Création d'un script "retablir_sauvegarde" qui permet de restaurer la sauvegarde
 cat <<EOF > /home/retablir_sauvegarde.sh
@@ -111,3 +111,21 @@ sudo sshpass -p "$mdpssh" ssh "$loginssh"@"$serverssh" apt-get install snapd -y
 sudo sshpass -p "$mdpssh" ssh "$loginssh"@"$serverssh" snap install nextcloud
 sudo sshpass -p "$mdpssh" ssh "$loginssh"@"$serverssh" /snap/bin/nextcloud.manual-install "nextcloud-admin" "N3x+_Cl0uD"
 
+# Monitoring
+sudo sshpass -p "$mdpssh" ssh "$loginssh"@"$serverssh" << EOF
+    # Création du script de surveillance
+    cat << 'SCRIPT' > /home/\$loginssh/script_monitoring.sh
+        #!/bin/bash
+        date=\$(date +"%d-%m-%Y %T")
+        utilisation_cpu=\$(top -bn1 | awk '/Cpu\(s\)/ {print 100 - $8}')
+        utilisation_memoire=\$(free | awk '/Mem/ {printf("%.2f"), $3/$2 * 100}')
+        utilisation_reseau=\$(ifstat | awk 'NR==3 {print $1}')
+        echo "Jour du rapport : \$date ; Utilisation CPU: \$utilisation_cpu % ; Utilisation Memoire: \$utilisation_memoire % ; Utilisation Network: \$utilisation_reseau %" >> rapport.log
+    SCRIPT
+
+    # Configuration de la tâche cron
+    (crontab -l ; echo '* * * * 1-5 /home/\$loginssh/script_monitoring.sh') | crontab -
+
+    # Nettoyage des fichiers temporaires
+    rm script_monitoring.sh
+EOF
