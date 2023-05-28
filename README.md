@@ -29,6 +29,6 @@ script de déploiement de comptes pour une liste d’utilisateurs.trices. qui es
 - [x] Installation de nextcloud sur le serveur distant avec compte administrateur
 
 ### Monitoring
-- [] Installation d'outil de monitoring sur le serveur distant
+- [x] Installation d'outil de monitoring sur le serveur distant
 
 
