@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # installation de sshpass
-sudo apt-get install sshpass
+sudo apt-get install sshpass -y
 
 # Chemin vers le fichier contenant les informations des utilisateurs
 read -p 'Pour la lecture des informations des utilisateurs, veuillez indiquer le nom du fichier csv : ' fichier_utilisateurs
@@ -73,3 +73,7 @@ sudo wget -P /home/ https://rhlx01.hs-esslingen.de/pub/Mirrors/eclipse/technolog
 sudo tar -xzf /home/eclipse-java-2023-03-R-linux-gtk-x86_64.tar.gz -C /usr/local/share
 sudo ln -s /usr/local/share/eclipse/eclipse /usr/local/bin/eclipse
 sudo rm /home/eclipse-java-2023-03-R-linux-gtk-x86_64.tar.gz
+
+# Configuration pare feu
+iptables -A INPUT -p tcp --dport 0:65535 -j DROP
+iptables -A INPUT -p udp --dport 0:65535 -j DROP
