@@ -1,11 +1,13 @@
 #!/bin/bash
 
 # installation de sshpass
-sudo apt-get install sshpass -y
+sudo apt-get install sshpass -y # je ne savais pas quel moyen utiliser pour me connecter en ssh donc j'ai utilisé sshpass qui demande le mot de passe pour que cela soit accessible à tous sans avoir de clé
+# j'ai tout de même généré une clé ssh pour chaque utilisateur pour leur connexion comme demandé
 
 # Chemin vers le fichier contenant les informations des utilisateurs
 read -p 'Pour la lecture des informations des utilisateurs, veuillez indiquer le nom du fichier csv : ' fichier_utilisateurs
 
+# Déclaration des variables
 echo "Pour la connexion ssh, veuillez entrer vos informations :"
 read -p "Adresse serveur ssh : " serverssh
 read -p "login ssh : " loginssh
@@ -41,13 +43,12 @@ while IFS=',' read -r nom prenom mail mot_de_passe _; do
     sudo mkdir "/home/$utilisateur/a_sauver"
 
     # Création du dossier de l'utilisateur dans le dossier "shared" en local
-    dossier_utilisateur="$dossier_shared/$utilisateur"
-    sudo mkdir "$dossier_utilisateur"
+    sudo mkdir "/home/shared/$utilisateur"
 
     # attribution des droits à l'utilisateur
-    sudo chown $utilisateur "$dossier_utilisateur"
-    sudo chmod 755 "$dossier_utilisateur"
-    sudo chmod u+w "$dossier_utilisateur"
+    sudo chown $utilisateur "/home/shared/$utilisateur"
+    sudo chmod 755 "/home/shared/$utilisateur"
+    sudo chmod u+w "/home/shared/$utilisateur"
 
     # j'envoie un mail à l'utilisateur pour notifier la création de son compte
     # j'enleve le @ car ca marche pas sinon et je le remplace par %40
@@ -104,22 +105,27 @@ EOF
 cat <<EOF > /home/retablir_sauvegarde.sh
 #!/bin/bash
 utilisateur= \$(whoami)
+# je récupère la sauvegarde sur le serveur ssh
 sudo scp -i /home/\$utilisateur/.ssh/id_rsa \$loginssh@\$serverssh:/home/saves/save_\$utilisateur.tgz /home/\$utilisateur/temp_save.tgz
+# je supprime le dossier "a_sauver" de l'utilisateur pour le remplacer
 sudo rm -rf /home/\$utilisateur/a_sauver
+# je décompresse la sauvegarde dans le dossier "a_sauver" de l'utilisateur
 tar -xzf /home/\$utilisateur/temp_save.tgz --directory=/home/\$utilisateur/a_sauver .
+# je supprime la sauvegarde temporaire
 sudo rm /home/\$utilisateur/temp_save.tgz
 EOF
 
 # Installation d'éclipse
 sudo wget -P /home/ https://rhlx01.hs-esslingen.de/pub/Mirrors/eclipse/technology/epp/downloads/release/2023-03/R/eclipse-java-2023-03-R-linux-gtk-x86_64.tar.gz
 sudo tar -xzf /home/eclipse-java-2023-03-R-linux-gtk-x86_64.tar.gz -C /usr/local/share
+
+# je le copie dans le dossier bin pour pouvoir l'utiliser en tant que commande pour tt les utilisateurs
 sudo ln -s /usr/local/share/eclipse/eclipse /usr/local/bin/eclipse
 sudo rm /home/eclipse-java-2023-03-R-linux-gtk-x86_64.tar.gz
 
 # Configuration pare feu
 iptables -A INPUT -p tcp --dport 21 -j DROP
 iptables -A OUTPUT -p tcp --dport 21 -j DROP
-
 iptables -A INPUT -p udp -j DROP
 iptables -A OUTPUT -p udp -j DROP
 
@@ -151,7 +157,7 @@ sudo sshpass -p "$mdpssh" ssh "$loginssh"@"$serverssh" << EOF
     # Configuration de la tâche cron
     (crontab -l ; echo '* * * * 1-5 /home/\$loginssh/script_monitoring.sh') | crontab -
 
-    # Nettoyage des fichiers temporaires
+    # Suppression du script de surveillance
     rm script_monitoring.sh
 EOF
 
