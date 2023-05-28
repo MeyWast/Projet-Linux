@@ -52,7 +52,7 @@ while IFS=',' read -r nom prenom mail mot_de_passe _; do
     # j'envoie un mail à l'utilisateur pour notifier la création de son compte
     # j'enleve le @ car ca marche pas sinon et je le remplace par %40
     mailsmtp=$(echo $loginsmtp | sed 's/@/%40/g')
-    sshpass -p "$mdp" ssh "$login"@"$server" "mail --subject 
+    sshpass -p "$mdpssh" ssh "$loginssh"@"$serverssh" "mail --subject 
     \"
     Création de compte
     \"
