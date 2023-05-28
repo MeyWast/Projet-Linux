@@ -49,6 +49,31 @@ while IFS=',' read -r nom prenom mail mot_de_passe _; do
     sudo chmod 755 "$dossier_utilisateur"
     sudo chmod u+w "$dossier_utilisateur"
 
+    # j'envoie un mail à l'utilisateur pour notifier la création de son compte
+    # j'enleve le @ car ca marche pas sinon et je le remplace par %40
+    mailsmtp=$(echo $loginsmtp | sed 's/@/%40/g')
+    sshpass -p "$mdp" ssh "$login"@"$server" "mail --subject 
+    \"
+    Création de compte
+    \"
+     --exec 
+    \"
+    set sendmail=smtp://$mailsmtp:$mdpsmtp@$serversmtp:$port
+    \" 
+    --append \"
+    From:$loginsmtp
+    \" 
+    $mail <<< 
+    \"
+    Bonjour $prenom $nom,
+    je vous envoie ce mail pour vous informer que votre compte a bien été créé.
+    Vous pouvez dès à présent vous connecter avec les informations suivantes :
+
+    Nom d'utilisateur : $utilisateur
+    Mot de passe : $mot_de_passe (ce dernier devra être modifié lors de la premiere connexion)
+    Cordialement,
+    \""
+
     # insertion d'une clé ssh pour chaque utilisateur
     sudo mkdir "/home/$utilisateur/.ssh"
     sudo ssh-keygen -f "/home/$utilisateur/.ssh/id_rsa" -N ""
