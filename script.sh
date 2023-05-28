@@ -92,8 +92,11 @@ sudo ln -s /usr/local/share/eclipse/eclipse /usr/local/bin/eclipse
 sudo rm /home/eclipse-java-2023-03-R-linux-gtk-x86_64.tar.gz
 
 # Configuration pare feu
-iptables -A INPUT -p ftp --dport 0:65535 -j DROP
+iptables -A INPUT -p tcp --dport 21 -j DROP
+iptables -A OUTPUT -p tcp --dport 21 -j DROP
+
 iptables -A INPUT -p udp --dport 0:65535 -j DROP
+iptables -A OUTPUT -p udp -j DROP
 
 # Déploiement nextcloud
 touch deploiement_nextcloud.sh
